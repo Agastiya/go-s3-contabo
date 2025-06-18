@@ -27,13 +27,20 @@ func init() {
 
 func main() {
 
-	buckets, _ := s3Storage.ListBuckets()
+	bucketFilePath := "sample-file/images.jpg"
+	fileName := "images.jpg" // or full file path
+
+	buckets, err := s3Storage.ListBuckets()
+	if err != nil {
+		log.Fatalf("Error listing buckets: %v", err)
+	}
 	log.Print(buckets)
 
-	bucketFilePath := "sample-file/images.jpg"
-	s3Storage.UploadFile(bucketFilePath)
-
-	fileName := "images.jpg" // or full file path
+	err = s3Storage.UploadFile(bucketFilePath)
+	if err != nil {
+		log.Fatalf("Error upload file: %v", err)
+	}
+	log.Print("Suscessfully uploaded file")
 
 	file, err := s3Storage.ReadFile(fileName)
 	if err != nil {
@@ -42,5 +49,10 @@ func main() {
 	}
 	log.Printf("File content: %s", *file)
 
-	s3Storage.DeleteFile(fileName)
+	err = s3Storage.DeleteFile(fileName)
+	if err != nil {
+		log.Fatalf("Error deleting file: %v", err)
+		return
+	}
+	log.Printf("File %s deleted successfully", fileName)
 }
